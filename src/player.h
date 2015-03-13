@@ -900,11 +900,11 @@ public:
 			client->sendCreatureSay(creature, type, text, pos);
 		}
 	}
-	void sendCreatureSquare(const Creature* creature, SquareColor_t color) {
+	void sendCreatureSquare(const Creature* creature, bool isPermanent, SquareColor_t color) {
 		for (auto it : cSpectators)
-			it.second->sendCreatureSquare(creature, color);
+			it.second->sendCreatureSquare(creature, isPermanent, color);
 		if (client) {
-			client->sendCreatureSquare(creature, color);
+			client->sendCreatureSquare(creature, isPermanent, color);
 		}
 	}
 	void sendCreatureChangeOutfit(const Creature* creature, const Outfit_t& outfit) {

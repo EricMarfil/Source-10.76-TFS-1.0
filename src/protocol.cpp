@@ -150,7 +150,7 @@ bool Protocol::XTEA_decrypt(NetworkMessage& msg) const
 
 bool Protocol::RSA_decrypt(NetworkMessage& msg)
 {
-	if (msg.getMessageLength() - msg.getReadPos() != 128) {
+	if (msg.getMessageLength() - msg.getReadPos() < 128) {
 		return false;
 	}
 

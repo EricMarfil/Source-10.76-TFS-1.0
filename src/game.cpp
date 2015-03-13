@@ -4660,7 +4660,7 @@ void Game::addMagicEffect(const SpectatorVec& list, const Position& pos, uint8_t
 
 void Game::addDistanceEffect(const Position& fromPos, const Position& toPos, uint8_t effect)
 {
-	if (effect > CONST_ANI_LAST || effect == CONST_ANI_UNK1 || effect == CONST_ANI_UNK2 || effect == CONST_ANI_UNK3) {
+	if (effect > CONST_ANI_LAST || effect == CONST_ANI_UNK1 || effect == CONST_ANI_UNK2 || effect == CONST_ANI_UNK3 || effect == CONST_ANI_UNK4) {
 		return;
 	}
 

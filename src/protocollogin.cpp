@@ -99,17 +99,20 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	std::string password = msg.GetString();
 
 	if (version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX) {
-		disconnectClient(0x0A, "Only clients with protocol " CLIENT_VERSION_STR " allowed!");
+		if (version >= 1076)
+			disconnectClient(0x0B, "Only clients with protocol " CLIENT_VERSION_STR " allowed!");
+		else
+			disconnectClient(0x0A, "Only clients with protocol " CLIENT_VERSION_STR " allowed!");
 		return false;
 	}
 
 	if (g_game.getGameState() == GAME_STATE_STARTUP) {
-		disconnectClient(0x0A, "Gameworld is starting up. Please wait.");
+		disconnectClient(0x0B, "Gameworld is starting up. Please wait.");
 		return false;
 	}
 
 	if (g_game.getGameState() == GAME_STATE_MAINTAIN) {
-		disconnectClient(0x0A, "Gameworld is under maintenance. Please re-connect in a while.");
+		disconnectClient(0x0B, "Gameworld is under maintenance. Please re-connect in a while.");
 		return false;
 	}
 
@@ -121,7 +124,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 		std::ostringstream ss;
 		ss << "Your IP has been banned until " << formatDateShort(banInfo.expiresAt) << " by " << banInfo.bannedBy << ".\n\nReason specified:\n" << banInfo.reason;
-		disconnectClient(0x0A, ss.str().c_str());
+		disconnectClient(0x0B, ss.str().c_str());
 		return false;
 	}
 	//IF THE PASSWORD FIELDS AND ACCOUNT FIELD ARE EMPTY THEN THE USER WAN'T TO USE CAST SYSTEM
@@ -131,13 +134,13 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		cast_login = true;
 	}
 	if (!cast_login && accountName.empty()) {
-		disconnectClient(0x0A, "Invalid account name.");
+		disconnectClient(0x0B, "Invalid account name.");
 		return false;
 	}
 
 	Account account;
 	if (!cast_login && !IOLoginData::loginserverAuthentication(accountName, password, account)) {
-		disconnectClient(0x0A, "Account name or password is not correct.");
+		disconnectClient(0x0B, "Account name or password is not correct.");
 		return false;
 	}
 
@@ -152,6 +155,13 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		std::ostringstream ss;
 		ss << g_game.getMotdNum() << "\n" << g_config.getString(ConfigManager::MOTD);
 		output->AddString(ss.str());
+
+		//SessionKey
+		if (!cast_login) {
+			output->AddByte(0x28);
+
+			output->AddString(accountName + "\n" + password);
+		}
 
 		//Add char list
 		output->AddByte(0x64);
