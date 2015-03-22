@@ -409,15 +409,12 @@ bool ProtocolGame::parseFirstPacket(NetworkMessage& msg)
 
 	bool gamemasterFlag = msg.GetByte() != 0;
 	std::string sessionKey = msg.GetString();
+	std::string accountName = sessionKey.substr(0, sessionKey.find_first_of("\n"));
 	std::string characterName = msg.GetString();
-	std::string accountName;
-	std::string password;
-	if (sessionKey.empty()) {
+	std::string password = sessionKey.substr(sessionKey.find_first_of("\n") + 1);
+	
+	if (accountName.empty()) {
 		isCast = true;
-	}
-	if (!isCast) {
-		accountName += sessionKey.substr(0, sessionKey.find_first_of("\n"));
-		password += sessionKey.substr(sessionKey.find_first_of("\n") + 1);
 	}
 
 	uint32_t timeStamp = msg.get<uint32_t>();
