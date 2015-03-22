@@ -420,12 +420,15 @@ bool ProtocolGame::parseFirstPacket(NetworkMessage& msg)
 	if (!isCast) {
 		std::stringstream account(sessionKey);
 		std::string segment;
-		std::vector<std::string> seglist;
+		std::vector<std::string> vector;
 		while (std::getline(account, segment, '\n')) {
-			seglist.push_back(segment);
+			vector.push_back(segment);
+			continue;
 		}
-		accountName += seglist[0];
-		password += seglist[1];
+		if (!vector[1].empty()) {
+			accountName += vector[0];
+			password += vector[1];
+		}
 	}
 
 	uint32_t timeStamp = msg.get<uint32_t>();
